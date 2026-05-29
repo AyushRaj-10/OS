@@ -1,44 +1,102 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int full = 0, empty = 3, item = 0, mutex = 1;
+int mutex = 1;
+int full = 0;
+int empty = 3;
+int x = 0;
+
+int wait(int s)
+{
+    return --s;
+}
+
+int signal(int s)
+{
+    return ++s;
+}
 
 void producer()
 {
-    if(mutex == 1 && empty != 0)
-    {
-        full++;
-        item++;
-        empty--;
+    mutex = wait(mutex);
 
-        printf("Produced item %d\n", item);
-    }
-    else
-    {
-        printf("Buffer Full\n");
-    }
+    full = signal(full);
+
+    empty = wait(empty);
+
+    x++;
+
+    printf("Producer produces item %d\n", x);
+
+    mutex = signal(mutex);
 }
 
 void consumer()
 {
-    if(mutex == 1 && full != 0)
-    {
-        printf("Consumed item %d\n", item);
+    mutex = wait(mutex);
 
-        full--;
-        item--;
-        empty++;
-    }
-    else
-    {
-        printf("Buffer Empty\n");
-    }
+    full = wait(full);
+
+    empty = signal(empty);
+
+    printf("Consumer consumes item %d\n", x);
+
+    x--;
+
+    mutex = signal(mutex);
 }
 
 int main()
 {
-    producer();
-    consumer();
-    consumer();
+    int choice;
+
+    while(1)
+    {
+        printf("\n1. Producer");
+        printf("\n2. Consumer");
+        printf("\n3. Exit");
+
+        printf("\nEnter choice: ");
+
+        scanf("%d", &choice);
+
+        switch(choice)
+        {
+            case 1:
+
+                if(mutex == 1 && empty != 0)
+                {
+                    producer();
+                }
+                else
+                {
+                    printf("Buffer Full\n");
+                }
+
+                break;
+
+            case 2:
+
+                if(mutex == 1 && full != 0)
+                {
+                    consumer();
+                }
+                else
+                {
+                    printf("Buffer Empty\n");
+                }
+
+                break;
+
+            case 3:
+
+                exit(0);
+
+            default:
+
+                printf("Invalid Choice\n");
+        }
+    }
 
     return 0;
 }

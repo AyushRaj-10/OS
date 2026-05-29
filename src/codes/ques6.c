@@ -2,6 +2,9 @@
 
 int main()
 {
+    int n = 5;
+    int m = 3;
+
     int alloc[5][3] = {
         {0,1,0},
         {2,0,0},
@@ -26,46 +29,46 @@ int main()
 
     int safe[5];
 
-    int count = 0;
+    int index = 0;
 
-    for(int i = 0; i < 5; i++)
+    // Calculate Need Matrix
+
+    for(int i = 0; i < n; i++)
     {
-        for(int j = 0; j < 3; j++)
+        for(int j = 0; j < m; j++)
         {
             need[i][j] =
             max[i][j] - alloc[i][j];
         }
     }
 
-    while(count < 5)
+    // Find Safe Sequence
+
+    for(int k = 0; k < n; k++)
     {
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < n; i++)
         {
             if(finish[i] == 0)
             {
                 int possible = 1;
 
-                for(int j = 0; j < 3; j++)
+                for(int j = 0; j < m; j++)
                 {
                     if(need[i][j] > avail[j])
                     {
                         possible = 0;
+
                         break;
                     }
                 }
 
-
                 if(possible)
                 {
-                    safe[count] = i;
-
-                    count++;
+                    safe[index++] = i;
 
                     finish[i] = 1;
 
-                    printf("P%d executed\n", i);
-
-                    for(int j = 0; j < 3; j++)
+                    for(int j = 0; j < m; j++)
                     {
                         avail[j] += alloc[i][j];
                     }
@@ -74,11 +77,9 @@ int main()
         }
     }
 
+    printf("Safe Sequence:\n");
 
-
-    printf("\nSafe Sequence:\n");
-
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < n; i++)
     {
         printf("P%d ", safe[i]);
     }
